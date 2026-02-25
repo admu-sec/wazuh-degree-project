@@ -2,14 +2,14 @@
 
 A collection of useful Wazuh commands.
 
-## Contents:
+## Contents
 
 - [Manager](#manager)
 - [Agent](#agent)
 - [Rules & Decoders](#rules--decoders)
 - [Logs](#logs)
 
-## Manager:
+## Manager
 
 | Description | Command |
 |-------------|---------|
@@ -19,7 +19,7 @@ A collection of useful Wazuh commands.
 | Check Manager status | `sudo systemctl status wazuh-manager` |
 | Check Manager version | `sudo /var/ossec/bin/wazuh-control info` |
 
-## Agent:
+## Agent
 
 | Description | Command |
 |-------------|---------|
@@ -30,7 +30,7 @@ A collection of useful Wazuh commands.
 | List all agents | `sudo /var/ossec/bin/manage_agents -l` |
 | Check agent connection | `sudo /var/ossec/bin/agent_control -l` |
 
-## Rules & Decoders:
+## Rules & Decoders
 
 | Description | Command |
 |-------------|---------|
@@ -38,7 +38,7 @@ A collection of useful Wazuh commands.
 | Reload rules | `sudo /var/ossec/bin/wazuh-control reload` |
 | List loaded rules | `sudo /var/ossec/bin/ruleset_test` |
 
-## Logs:
+## Logs
 
 | Description | Command |
 |-------------|---------|
