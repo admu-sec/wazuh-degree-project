@@ -180,7 +180,7 @@ sudo nano /var/ossec/etc/ossec.conf
 ### 3. Validate & Restart
 ```bash
 # Validate configuration
-sudo /var/ossec/bin/wazuh-logtest -t
+sudo /var/ossec/bin/wazuh-logtest
 
 # Restart Wazuh Manager
 sudo systemctl restart wazuh-manager
