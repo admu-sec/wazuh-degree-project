@@ -1,8 +1,9 @@
 # Wazuh SIEM Configuration
+
 **Project:** Optimizing Wazuh SIEM for Threat Detection  
 **Author:** admu-sec  
-**Date:** 2026-02-26
-**Version:** 1.0  
+**Date:** 2026-02-26  
+**Version:** 1.0
 
 ---
 
