@@ -34,15 +34,18 @@ Monitored Agents:
 
 ## 📁 Repository Structure
 ```
-wazuh/
-├── README.md                    # Project documentation
-├── commands/
-│   └── README.md               # Command reference & testing guide
-├── rules/
-│   └── local_rules.xml         # Custom detection rules (23 rules)
-└── config/
-│   └── ossec.conf              # Active Response configuration
-
+wazuh-siem-config/
+│
+├── 📄 README.md                    # Project overview and documentation
+│
+├── 📂 commands/
+│   └── 📄 README.md               # Command reference & testing guide
+│
+├── 📂 rules/
+│   └── 📄 local_rules.xml         # Custom detection rules (23 rules)
+│
+└── 📂 config/
+└── 📄 ossec.conf              # Active Response configuration
 ```
 
 ---
