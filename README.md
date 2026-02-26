@@ -252,7 +252,7 @@ Even with whitelisted agents, multiple security layers remain active:
 ## 📝 Requirements
 
 - **Wazuh Manager:** 4.x
-- **Wazuh Agents:** Windows 10/11, Windows Server 2019/2022
+- **Wazuh Agents:** Windows 10/11, Windows Server 2019/2022/2025
 - **Sysmon:** Installed on Windows agents (for rules 100011-100019, 100023, 100025)
 - **Network:** Agents must communicate with Manager on port 1514/TCP
 
