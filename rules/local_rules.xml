@@ -1,8 +1,13 @@
-<!-- Local rules for Wazuh SIEM -->
-<!-- Project: Optimizing Wazuh SIEM for Threat Detection -->
-<!-- Author: admu-sec -->
-<!-- Date: 2026-02-23/24 -->
-<!-- Total Rules: 23 -->
+<!-- 
+  Wazuh Custom Security Rules
+  Project: Optimizing Wazuh SIEM for Threat Detection
+  Author: admu-sec
+  Date: 2026-02-27
+  Version: 1.1
+  
+  Total Rules: 27 (4 SSH + 19 Windows + 4 Linux)
+  MITRE ATT&CK Coverage: 16 techniques
+-->
 
 <!-- ============================================ -->
 <!-- SSH SECURITY RULES (4 rules)                -->
@@ -12,45 +17,47 @@
 
   <!-- Rule 100001: SSH Authentication Failure -->
   <rule id="100001" level="10">
-    <if_sid>5710,5711,5712,5716</if_sid>
-    <description>sshd: Authentication failed attempt detected.</description>
+    <if_sid>5716</if_sid>
+    <description>SSH: Authentication failure</description>
     <mitre>
       <id>T1110.001</id>
       <id>T1078</id>
     </mitre>
-    <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,</group>
+    <group>authentication_failed,pci_dss_10.2.4,pci_dss_10.2.5,gpg13_7.1,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_AU.14,nist_800_53_AC.7,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
   </rule>
 
-  <!-- Rule 100002: SSH Brute Force Attack -->
+  <!-- Rule 100002: SSH Brute Force Attack (5+ attempts in 5 minutes) -->
   <rule id="100002" level="10" frequency="5" timeframe="300">
     <if_matched_sid>100001</if_matched_sid>
     <same_source_ip />
-    <description>sshd: Brute force attack detected (5+ failures in 5min)</description>
+    <description>SSH: Brute force attack detected (5+ failed attempts)</description>
     <mitre>
       <id>T1110.001</id>
     </mitre>
-    <group>authentication_failed,attack,brute_force,</group>
+    <group>authentication_failures,pci_dss_11.4,pci_dss_10.2.4,pci_dss_10.2.5,gdpr_IV_35.7.d,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_SI.4,nist_800_53_AU.14,nist_800_53_AC.7,tsc_CC6.1,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
   </rule>
 
   <!-- Rule 100003: SSH Password Spray Attack -->
-  <rule id="100003" level="12" frequency="10" timeframe="120">
+  <rule id="100003" level="12" frequency="5" timeframe="3600">
     <if_matched_sid>100001</if_matched_sid>
-    <same_user />
-    <description>sshd: Password spray attack - same account targeted from multiple IP's.</description>
+    <different_srcip />
+    <description>SSH: Password spray attack detected (multiple IPs, same user)</description>
     <mitre>
       <id>T1110.003</id>
     </mitre>
-    <group>authentication_failed,password_spray,attack,</group>
+    <group>authentication_failures,</group>
   </rule>
 
-  <!-- Rule 100004: Successful SSH Login After Failed Attempts -->
+  <!-- Rule 100004: Successful Login After Brute Force -->
   <rule id="100004" level="14">
     <if_sid>5715</if_sid>
-    <description>CRITICAL: Successful SSH login after recent failed attempts - possible breach.</description>
+    <if_matched_sid>100002</if_matched_sid>
+    <same_source_ip />
+    <description>SSH: Successful login after brute force attempt - potential compromise</description>
     <mitre>
       <id>T1078</id>
     </mitre>
-    <group>authentication_success,successful_attack,</group>
+    <group>authentication_success,pci_dss_10.2.5,gpg13_7.1,gpg13_7.2,gdpr_IV_32.2,hipaa_164.312.b,nist_800_53_AU.14,nist_800_53_AC.7,tsc_CC6.8,tsc_CC7.2,tsc_CC7.3,</group>
   </rule>
 
 </group>
@@ -59,235 +66,297 @@
 <!-- WINDOWS SECURITY RULES (19 rules)           -->
 <!-- ============================================ -->
 
-<group name="windows,syscheck,sysmon">
+<group name="local,windows,sysmon">
 
   <!-- ========================================== -->
-  <!-- NOISE REDUCTION (2 rules)                 -->
+  <!-- NOISE REDUCTION                           -->
   <!-- ========================================== -->
 
-  <!-- Rule 100005: Ignore Windows Disk Cleanup -->
+  <!-- Rule 100005: Ignore Disk Cleanup Utility -->
   <rule id="100005" level="0">
-    <if_sid>554,61603,61613</if_sid>
-    <field name="win.eventdata.image">\\cleanmgr.exe</field>
-    <description>Ignore False Positive from Windows Disk Cleanup</description>
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.image" type="pcre2">(?i)\\cleanmgr\.exe$</field>
+    <description>Windows: Disk Cleanup utility (cleanmgr.exe) - noise reduction</description>
+    <group>noise_reduction,</group>
   </rule>
 
-  <!-- Rule 100006: Ignore Windows Update Services -->
+  <!-- Rule 100006: Ignore Windows Update -->
   <rule id="100006" level="0">
-    <if_sid>554</if_sid>
-    <field name="win.eventdata.image" type="pcre2">\\TiWorker\.exe$|\\wuauclt\.exe$|\\TrustedInstaller\.exe$</field>
-    <description>Ignore Windows Update service file changes</description>
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.image" type="pcre2">(?i)\\wuauclt\.exe$</field>
+    <description>Windows: Windows Update Client - noise reduction</description>
+    <group>noise_reduction,</group>
   </rule>
 
   <!-- ========================================== -->
-  <!-- DC SECURITY (1 rule)                      -->
+  <!-- DC SECURITY                               -->
   <!-- ========================================== -->
 
-  <!-- Rule 100010: Administrator Login on Domain Controller -->
+  <!-- Rule 100010: Administrator Login on DC -->
   <rule id="100010" level="12">
-    <if_sid>92657</if_sid>
+    <if_sid>60106</if_sid>
+    <field name="win.system.computer">DC</field>
     <field name="win.eventdata.targetUserName">Administrator</field>
-    <description>Critical Event: Remote login using Administrator account on Domain Controller</description>
+    <description>Windows DC: Administrator account login detected</description>
     <mitre>
       <id>T1078</id>
     </mitre>
+    <group>authentication_success,dc_security,</group>
   </rule>
 
   <!-- ========================================== -->
-  <!-- POWERSHELL & CREDENTIAL DUMPING (3 rules) -->
+  <!-- POWERSHELL & CREDENTIAL DUMPING           -->
   <!-- ========================================== -->
 
-  <!-- Rule 100011: PowerShell Encoded Command -->
+  <!-- Rule 100011: PowerShell Encoded Command (50+ chars) -->
   <rule id="100011" level="12">
     <if_sid>61699</if_sid>
-    <field name="win.eventdata.commandLine" type="pcre2">-enc|-encodedcommand|-e\s+[A-Za-z0-9+/=]{50,}</field>
-    <description>PowerShell encoded command execution detected</description>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)-enc.*[A-Za-z0-9+/=]{50,}</field>
+    <description>PowerShell: Encoded command detected (potential obfuscation)</description>
     <mitre>
       <id>T1059.001</id>
       <id>T1027</id>
     </mitre>
-    <group>powershell,attack,</group>
+    <group>powershell,execution,</group>
   </rule>
 
-  <!-- Rule 100012: Mimikatz Credential Dumping -->
+  <!-- Rule 100012: Mimikatz Detection -->
   <rule id="100012" level="15">
     <if_sid>61699</if_sid>
-    <field name="win.eventdata.commandLine" type="pcre2">(?i)sekurlsa|lsadump|privilege::debug|mimikatz</field>
-    <description>CRITICAL: Mimikatz credential dumping attempt detected</description>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(sekurlsa|lsadump|mimikatz)</field>
+    <description>CRITICAL: Mimikatz credential dumping detected</description>
     <mitre>
       <id>T1003.001</id>
     </mitre>
-    <group>credential_dumping,attack,</group>
+    <group>credential_access,mimikatz,</group>
   </rule>
 
   <!-- Rule 100025: LSASS Memory Access -->
   <rule id="100025" level="15">
     <if_sid>61699</if_sid>
-    <field name="win.eventdata.commandLine" type="pcre2">lsass|procdump.*lsass</field>
-    <description>CRITICAL: LSASS-related activity - credential dumping attempt</description>
+    <field name="win.eventdata.targetImage" type="pcre2">(?i)\\lsass\.exe$</field>
+    <description>CRITICAL: LSASS memory access detected - potential credential theft</description>
     <mitre>
       <id>T1003.001</id>
     </mitre>
-    <group>credential_dumping,attack,</group>
+    <group>credential_access,lsass,</group>
   </rule>
 
   <!-- ========================================== -->
-  <!-- RDP SECURITY (1 rule)                     -->
+  <!-- RDP SECURITY                              -->
   <!-- ========================================== -->
 
-  <!-- Rule 100013: RDP Brute Force Attack -->
+  <!-- Rule 100013: RDP Brute Force -->
   <rule id="100013" level="10" frequency="5" timeframe="300">
-    <if_matched_sid>60122</if_matched_sid>
+    <if_sid>60122</if_sid>
     <same_source_ip />
-    <description>RDP Brute Force: Multiple failed logins detected</description>
+    <description>RDP: Brute force attack detected (5+ failed attempts)</description>
     <mitre>
       <id>T1110</id>
     </mitre>
-    <group>windows,rdp,brute_force,</group>
+    <group>authentication_failures,rdp,</group>
   </rule>
 
   <!-- ========================================== -->
-  <!-- PERSISTENCE DETECTION (6 rules)           -->
+  <!-- PERSISTENCE DETECTION                     -->
   <!-- ========================================== -->
 
   <!-- Rule 100014: New Windows Service Created -->
   <rule id="100014" level="10">
     <if_sid>60612</if_sid>
-    <field name="win.system.eventID">^7045$</field>
-    <description>New Windows service installed - potential persistence mechanism</description>
+    <field name="win.system.eventID">7045</field>
+    <description>Windows: New service installed - potential persistence</description>
     <mitre>
       <id>T1543.003</id>
     </mitre>
-    <group>windows,persistence,</group>
+    <group>persistence,service_creation,</group>
   </rule>
 
   <!-- Rule 100015: OneDrivePatcher.exe Detection -->
   <rule id="100015" level="12">
-    <if_sid>61613</if_sid>
-    <field name="win.eventdata.image">OneDrivePatcher.exe</field>
-    <description>SUSPICIOUS: OneDrivePatcher.exe detected - verify legitimacy</description>
+    <if_sid>61699</if_sid>
+    <field name="win.eventdata.image" type="pcre2">(?i)OneDrivePatcher\.exe$</field>
+    <description>Suspicious: OneDrivePatcher.exe detected (potential malware)</description>
     <mitre>
       <id>T1036</id>
     </mitre>
+    <group>malware,masquerading,</group>
   </rule>
 
-  <!-- Rule 100016: Registry Run Key Modified (Base Rule) -->
+  <!-- Rule 100016: Registry Run Key Modified -->
   <rule id="100016" level="11">
-    <if_sid>61699</if_sid>
-    <field name="win.eventdata.targetObject" type="pcre2">\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run|\\CurrentVersion\\RunOnce</field>
-    <description>Registry Run key modified - potential persistence</description>
+    <if_sid>61612</if_sid>
+    <field name="win.eventdata.targetObject" type="pcre2">(?i)\\Software\\Microsoft\\Windows\\CurrentVersion\\Run</field>
+    <description>Registry: Run key modified - potential persistence mechanism</description>
     <mitre>
       <id>T1547.001</id>
     </mitre>
-    <group>windows,persistence,registry,</group>
+    <group>persistence,registry,</group>
   </rule>
 
-  <!-- Rule 100017: Registry Run Key Whitelist -->
+  <!-- Rule 100017: Registry Whitelist for Legitimate Software -->
   <rule id="100017" level="0">
-    <if_sid>100016</if_sid>
-    <field name="win.eventdata.details" type="pcre2">C:\\Program Files\\Microsoft Office|C:\\Program Files\\Adobe|C:\\Program Files\\Google</field>
-    <description>Ignore legitimate Run key from trusted software</description>
+    <if_matched_sid>100016</if_matched_sid>
+    <field name="win.eventdata.details" type="pcre2">(?i)(OneDrive|Teams|Skype|Spotify|Discord)</field>
+    <description>Registry: Legitimate software in Run key (whitelisted)</description>
+    <group>whitelist,</group>
   </rule>
 
   <!-- Rule 100018: Registry Run Key - Suspicious Path -->
   <rule id="100018" level="14">
-    <if_sid>100016</if_sid>
-    <field name="win.eventdata.details" type="pcre2">AppData\\Roaming|Users\\Public|Temp</field>
+    <if_matched_sid>100016</if_matched_sid>
+    <field name="win.eventdata.details" type="pcre2">(?i)(AppData\\Local\\Temp|Users\\Public|ProgramData)</field>
     <description>CRITICAL: Registry Run key points to suspicious location</description>
     <mitre>
       <id>T1547.001</id>
     </mitre>
-    <group>windows,persistence,registry,attack,</group>
+    <group>persistence,registry,suspicious_path,</group>
   </rule>
 
   <!-- Rule 100019: PowerShell in Registry Run Key -->
   <rule id="100019" level="15">
-    <if_sid>100016</if_sid>
-    <field name="win.eventdata.details" type="pcre2">powershell\.exe.*-enc|powershell\.exe.*-encodedcommand</field>
-    <description>CRITICAL: Registry Run key with encoded PowerShell</description>
+    <if_matched_sid>100016</if_matched_sid>
+    <field name="win.eventdata.details" type="pcre2">(?i)(powershell|pwsh|cmd)</field>
+    <description>CRITICAL: PowerShell/CMD in Registry Run key - high risk persistence</description>
     <mitre>
       <id>T1547.001</id>
       <id>T1059.001</id>
     </mitre>
-    <group>windows,persistence,registry,powershell,attack,</group>
+    <group>persistence,powershell,registry,</group>
   </rule>
 
   <!-- ========================================== -->
-  <!-- CRITICAL SECURITY EVENTS (3 rules)        -->
+  <!-- CRITICAL SECURITY EVENTS                  -->
   <!-- ========================================== -->
 
-  <!-- Rule 100020: Security Logs Cleared -->
+  <!-- Rule 100020: Security Event Logs Cleared -->
   <rule id="100020" level="15">
-    <if_sid>60000</if_sid>
-    <field name="win.system.eventID">^1102$|^104$</field>
-    <description>CRITICAL: Security logs cleared! Possible cover-up activity</description>
+    <if_sid>60009</if_sid>
+    <field name="win.system.eventID">1102</field>
+    <description>CRITICAL: Security event logs were cleared - evidence destruction</description>
     <mitre>
       <id>T1070.001</id>
     </mitre>
-    <group>log_clearing,attack,</group>
+    <group>defense_evasion,log_deletion,</group>
   </rule>
 
   <!-- Rule 100021: Windows Firewall Disabled -->
   <rule id="100021" level="12">
-    <if_sid>60000</if_sid>
-    <field name="win.system.eventID">^2003$</field>
-    <description>High Alert: Windows Firewall has been disabled or modified</description>
+    <if_sid>61612</if_sid>
+    <field name="win.eventdata.targetObject" type="pcre2">(?i)\\System\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy</field>
+    <field name="win.eventdata.details">0x00000000</field>
+    <description>Windows Firewall disabled via registry</description>
     <mitre>
       <id>T1562.004</id>
     </mitre>
-    <group>defense_evasion,attack,</group>
+    <group>defense_evasion,firewall,</group>
   </rule>
 
-  <!-- Rule 100022: Ransomware Shadow Copy Deletion -->
+  <!-- Rule 100022: Ransomware - Shadow Copy Deletion -->
   <rule id="100022" level="14">
-    <if_sid>61603</if_sid>
-    <field name="win.eventdata.commandLine" type="pcre2">vssadmin.*delete.*shadows|wmic.*shadowcopy.*delete|bcdedit.*recoveryenabled.*no</field>
-    <description>CRITICAL: Ransomware activity - Shadow copies/recovery being disabled</description>
+    <if_sid>61699</if_sid>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)vssadmin.*delete.*shadows</field>
+    <description>CRITICAL: Shadow copies deleted - potential ransomware activity</description>
     <mitre>
       <id>T1490</id>
     </mitre>
-    <group>ransomware,attack,</group>
+    <group>impact,ransomware,</group>
   </rule>
 
   <!-- ========================================== -->
-  <!-- LATERAL MOVEMENT (2 rules)                -->
+  <!-- LATERAL MOVEMENT                          -->
   <!-- ========================================== -->
 
-  <!-- Rule 100023: PsExec Execution Detected -->
+  <!-- Rule 100023: PsExec Detection -->
   <rule id="100023" level="11">
     <if_sid>61699</if_sid>
-    <field name="win.eventdata.image" type="pcre2">\\psexec\.exe$|\\psexesvc\.exe$</field>
+    <field name="win.eventdata.image" type="pcre2">(?i)psexec(\.exe)?$</field>
     <description>PsExec execution detected - potential lateral movement</description>
     <mitre>
       <id>T1569.002</id>
     </mitre>
-    <group>windows,lateral_movement,</group>
+    <group>lateral_movement,psexec,</group>
   </rule>
 
-  <!-- Rule 100024: SMB Administrative Share Access -->
+  <!-- Rule 100024: SMB Admin Share Access -->
   <rule id="100024" level="8">
-    <if_sid>60000</if_sid>
-    <field name="win.system.eventID">^5140$</field>
-    <description>Administrative share accessed - potential lateral movement</description>
+    <if_sid>18101</if_sid>
+    <field name="win.eventdata.shareName" type="pcre2">(?i)(ADMIN\$|C\$|IPC\$)</field>
+    <description>SMB: Administrative share accessed</description>
     <mitre>
       <id>T1021.002</id>
     </mitre>
-    <group>windows,lateral_movement,smb,</group>
+    <group>lateral_movement,smb,</group>
   </rule>
 
   <!-- ========================================== -->
-  <!-- DEFENSE EVASION (1 rule)                  -->
+  <!-- DEFENSE EVASION                           -->
   <!-- ========================================== -->
 
   <!-- Rule 100026: Windows Defender Disabled -->
   <rule id="100026" level="13">
-    <if_sid>60000</if_sid>
-    <field name="win.system.eventID">^5001$</field>
-    <description>CRITICAL: Windows Defender Real-Time Protection disabled</description>
+    <if_sid>61612</if_sid>
+    <field name="win.eventdata.targetObject" type="pcre2">(?i)Windows Defender\\DisableAntiSpyware</field>
+    <field name="win.eventdata.details">0x00000001</field>
+    <description>Windows Defender disabled - security control bypassed</description>
     <mitre>
       <id>T1562.001</id>
     </mitre>
-    <group>windows,defense_evasion,</group>
+    <group>defense_evasion,antivirus,</group>
+  </rule>
+
+</group>
+
+<!-- ============================================ -->
+<!-- LINUX SECURITY RULES (4 rules)              -->
+<!-- ============================================ -->
+
+<group name="local,syscheck,linux">
+
+  <!-- Rule 100040: Critical System File Modified -->
+  <rule id="100040" level="12">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">/etc/passwd$|/etc/shadow$|/etc/sudoers$</field>
+    <description>CRITICAL: System authentication file modified</description>
+    <mitre>
+      <id>T1222</id>
+      <id>T1098</id>
+    </mitre>
+    <group>syscheck,rootcheck,</group>
+  </rule>
+
+  <!-- Rule 100041: SSH Authorized Keys Modified -->
+  <rule id="100041" level="10">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">\.ssh/authorized_keys$</field>
+    <description>SSH authorized_keys file modified - potential backdoor</description>
+    <mitre>
+      <id>T1098.004</id>
+    </mitre>
+    <group>syscheck,ssh,persistence,</group>
+  </rule>
+
+  <!-- Rule 100042: Cron Job Created/Modified -->
+  <rule id="100042" level="10">
+    <if_sid>550</if_sid>
+    <field name="file" type="pcre2">/etc/cron|/var/spool/cron</field>
+    <description>Cron job modified - potential persistence mechanism</description>
+    <mitre>
+      <id>T1053.003</id>
+    </mitre>
+    <group>syscheck,persistence,</group>
+  </rule>
+
+  <!-- Rule 100043: Suspicious Sudo Usage -->
+  <rule id="100043" level="8">
+    <if_sid>5401</if_sid>
+    <match>sudo: </match>
+    <user type="pcre2">^(?!root|wazuh|wazuh-user)</user>
+    <description>Sudo command executed by non-privileged user</description>
+    <mitre>
+      <id>T1548.003</id>
+    </mitre>
+    <group>privilege_escalation,</group>
   </rule>
 
 </group>
