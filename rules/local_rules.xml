@@ -321,21 +321,14 @@
     <group>defense_evasion,antivirus,</group>
   </rule>
 
-  <!-- Whitelist Powershell ploicy test scripts -->
-  <rule id="100027" level="0">
-    <if_sid>92205</if_sid>
-    <field name="data.win.eventdata.commandLine">PSScriptPolicyTest</field>
-    <description>Whitelist: PowerShell policy test scripts</description>
+<!-- Override Sysmon regel 92205 för PSScriptPolicyTest
+<rule id="100027" level="0">
+  <if_sid>61603</if_sid>
+  <field name="win.system.eventID">^1$</field>
+  <field name="win.eventdata.commandLine" type="pcre2">PSScriptPolicyTest</field>
+  <description>Whitelist: Sysmon Event 1 - PowerShell policy test scripts</description>
 </rule>
-
-  <!-- Whitelist WinRM running Powershell ploicy test -->
-  <rule id="100028" level="0">
-    <if_sid>92205</if_sid>
-    <field name="data.win.eventdata.image" type="pcre2">wsmprovshost\.exe$</field>
-    <field name="data.win.eventdata.commandLine">PSScriptPolicyTest</field>
-    <description>Whitelist: WinRM PowerShell policy tests</description>
-</rule>
-
+-->
   
 </group>
 
