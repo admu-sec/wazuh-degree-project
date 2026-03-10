@@ -262,7 +262,7 @@
   <!-- Rule 100040: Critical System File Modified -->
   <rule id="100040" level="12">
     <if_sid>550</if_sid>
-    <field name="file" type="pcre2">/etc/passwd$|/etc/shadow$|/etc/sudoers$</field>
+    <field name="path" type="pcre2">/etc/passwd$|/etc/shadow$|/etc/sudoers$</field>
     <description>CRITICAL: System authentication file modified.</description>
     <mitre>
       <id>T1222</id>
@@ -274,7 +274,7 @@
   <!-- Rule 100041: SSH Authorized keys Modified -->
   <rule id="100041" level="10">
     <if_sid>550</if_sid>
-    <field name="file" type="pcre2">\.ssh/authorized_keys$</field>
+    <match>authorized_keys</match
     <description>CRITICAL: SSH authorized_keys file modified - potential backdoor.</description>
     <mitre>
       <id>T1098.004</id>
@@ -285,7 +285,7 @@
   <!-- Rule 100042: Cron Job Created/Modified -->
   <rule id="100042" level="10">
     <if_sid>550</if_sid>
-    <field name="file" type="pcre2">/etc/cron|/var/spool/cron</field>
+    <field name="path" type="pcre2">/etc/cron|/var/spool/cron</field>
     <description>Cron Job modified - potential persistence mechanism.</description>
     <mitre>
       <id>T1053.003</id>
@@ -295,9 +295,7 @@
 
   <!-- Rule 100043: Suspicious Sudo Usage -->
   <rule id="100043" level="8">
-    <if_sid>5401</if_sid>
     <match>sudo: </match>
-    <user type="pcre2">^(?!root|wazuh|wazuh-user)<\/user>
     <description>Sudo command executed by non-privileged user.</description>
     <mitre>
       <id>T1548.003</id>
