@@ -304,3 +304,26 @@
   </rule>
 
 </group>
+
+<!-- ====================================== -->
+<!-- Windows Security Rules -->
+<!-- ====================================== -->
+
+<!-- Windows Security Rules -->
+<group name="local,windows,attack">
+
+    <!-- Rule 100044: LOLBins Detection -->
+    <rule id="100044" level="12">
+        <if_group>sysmon_event1</if_group>
+        <field name="win.eventdata.commandLine" type="pcre2">certutil|bitsadmin|mshta|regsvr32|rundll32</field>
+        <description>CRITICAL: Living-off-the-land binary (LOLBin) executed - potential attack.</description>
+        <mitre>
+            <id>T1218.003</id>
+            <id>T1218.005</id>
+            <id>T1218.010</id>
+            <id>T1218.011</id>
+        </mitre>
+        <group>lolbins,defense_evasion,</group>
+    </rule>
+
+</group>
