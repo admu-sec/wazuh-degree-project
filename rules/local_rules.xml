@@ -326,4 +326,17 @@
         <group>lolbins,defense_evasion,</group>
     </rule>
 
+</rule>
+
+    <!-- Rule 100045: Scheduled Task Created -->
+    <rule id="100045" level="10">
+        <if_sid>60103</if_sid>
+        <field name="win.system.eventID">^4698$</field>
+        <description>CRITICAL: Scheduled Task created - potential persistence mechanism.</description>
+        <mitre>
+            <id>T1053.005</id>
+        </mitre>
+        <group>scheduled_task,persistence,</group>
+    </rule>
+
 </group>
