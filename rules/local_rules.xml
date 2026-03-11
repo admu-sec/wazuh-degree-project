@@ -339,4 +339,16 @@
         <group>scheduled_task,persistence,</group>
     </rule>
 
+<!-- Rule 100046: Process Injection - ProcessAccess -->
+<rule id="100046" level="12">
+    <if_group>sysmon_event10</if_group>
+    <field name="win.eventdata.targetImage" type="pcre2">lsass.exe|winlogon.exe|csrss.exe</field>
+    <description>CRITICAL: Suspicious process access - potential process injection or credential dumping.</description>
+    <mitre>
+        <id>T1055</id>
+        <id>T1003.001</id>
+    </mitre>
+    <group>process_injection,credential_access,</group>
+</rule>
+  
 </group>
