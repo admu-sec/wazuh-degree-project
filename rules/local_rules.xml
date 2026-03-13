@@ -350,5 +350,16 @@
     </mitre>
     <group>process_injection,credential_access,</group>
 </rule>
+
+  <!-- Rule 100047: Suspicious Named Pipe - C2/Cobalt Strike -->
+<rule id="100047" level="12">
+    <if_group>sysmon_event17</if_group>
+    <field name="win.eventdata.pipeName" type="pcre2">\\postex_|\\msagent_|\\status_|MSSE-|cachedump|wceservicepipe</field>
+    <description>CRITICAL: Suspicious named pipe detected - potential C2 or credential dumping tool.</description>
+    <mitre>
+        <id>T1055.001</id>
+    </mitre>
+    <group>named_pipe,c2,defense_evasion,</group>
+</rule>
   
 </group>
