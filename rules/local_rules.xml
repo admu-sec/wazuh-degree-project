@@ -274,7 +274,7 @@
   <!-- Rule 100041: SSH Authorized keys Modified -->
   <rule id="100041" level="10">
     <if_sid>550</if_sid>
-    <match>authorized_keys</match
+    <match>authorized_keys</match>
     <description>CRITICAL: SSH authorized_keys file modified - potential backdoor.</description>
     <mitre>
       <id>T1098.004</id>
@@ -325,8 +325,6 @@
         </mitre>
         <group>lolbins,defense_evasion,</group>
     </rule>
-
-</rule>
 
     <!-- Rule 100045: Scheduled Task Created -->
     <rule id="100045" level="10">
