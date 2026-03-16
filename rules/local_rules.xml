@@ -242,14 +242,12 @@
   </rule>
 
   <!-- Override Sysmon regel 92205 för PowerShell policy test scripts -->
-  <!--
   <rule id="100027" level="0">
     <if_sid>61603</if_sid>
     <field name="win.system.eventID">^1$</field>
     <field name="win.eventdata.commandLine" type="pcre2">PSScriptPolicyTest</field>
     <description>Whitelist: Sysmon Event 1 - PowerShell policy test scripts</description>
   </rule>
-  -->
 
 </group>
 
