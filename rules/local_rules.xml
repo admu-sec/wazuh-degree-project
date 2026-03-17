@@ -368,5 +368,35 @@
     </mitre>
     <group>wmi,persistence,</group>
 </rule>
+
+<!-- Rule 100049: Screen Capture -->
+<rule id="100049" level="12">
+  <if_group>sysmon</if_group>
+  <field name="win.eventdata.image" type="pcre2">(?i)(snippingtool|screencapture|nircmd)</field>
+  <description>CRITICAL: Screen capture tool executed - potential data collection.</description>
+  <mitre>
+    <id>T1113</id>
+  </mitre>
+</rule>
+
+<!-- Rule 100050: Process Discovery -->
+<rule id="100050" level="8">
+  <if_group>sysmon</if_group>
+  <field name="win.eventdata.commandLine" type="pcre2">(?i)(tasklist|Get-Process|wmic\s+process)</field>
+  <description>Process discovery command executed - reconnaissance activity.</description>
+  <mitre>
+    <id>T1057</id>
+  </mitre>
+</rule>
+
+<!-- Rule 100051: Archive Collected Data -->
+<rule id="100051" level="12">
+  <if_group>sysmon</if_group>
+  <field name="win.eventdata.image" type="pcre2">(?i)(7z|winrar|compress|zip)</field>
+  <description>CRITICAL: Archiving tool executed - potential data staging before exfiltration.</description>
+  <mitre>
+    <id>T1560</id>
+  </mitre>
+</rule>
   
 </group>
