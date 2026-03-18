@@ -381,8 +381,7 @@
 
 <!-- Rule 100050: Process Discovery -->
 <rule id="100050" level="8">
-  <if_group>sysmon</if_group>
-  <field name="win.system.eventID">^1$</field>
+  <if_sid>61603</if_sid>
   <field name="win.eventdata.commandLine" type="pcre2">(?i)(tasklist|Get-Process|wmic)</field>
   <description>Process discovery command executed - reconnaissance activity.</description>
   <mitre>
