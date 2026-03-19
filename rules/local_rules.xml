@@ -391,7 +391,7 @@
 
 <!-- Rule 100051: Archive Collected Data -->
 <rule id="100051" level="12">
-  <if_group>sysmon</if_group>
+  <if_sid>61603</if_sid>
   <field name="win.eventdata.image" type="pcre2">(?i)(7z|winrar|compress|zip)</field>
   <description>CRITICAL: Archiving tool executed - potential data staging before exfiltration.</description>
   <mitre>
