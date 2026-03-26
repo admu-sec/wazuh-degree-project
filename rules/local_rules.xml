@@ -349,7 +349,7 @@
 
   <!-- Rule 100047: Suspicious Named Pipe - C2/Cobalt Strike -->
 <rule id="100047" level="12">
-    <if_group>sysmon_event17</if_group>
+    <if_group>sysmon_event_17</if_group>
     <field name="win.eventdata.pipeName" type="pcre2">\\postex_|\\msagent_|\\status_|MSSE-|cachedump|wceservicepipe</field>
     <description>CRITICAL: Suspicious named pipe detected - potential C2 or credential dumping tool.</description>
     <mitre>
