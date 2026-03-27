@@ -360,8 +360,7 @@
 
 <!-- Rule 100048: WMI Event Subscription -->
 <rule id="100048" level="12">
-    <if_sid>60009</if_sid>
-    <field name="win.system.eventID">^5861$</field>
+    <if_sid>89502</if_sid>
     <description>CRITICAL: WMI Event Subscription created - potential persistence mechanism.</description>
     <mitre>
         <id>T1546.003</id>
