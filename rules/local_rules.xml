@@ -397,5 +397,15 @@
     <id>T1560</id>
   </mitre>
 </rule>
+
+<!-- Rule 100052: Ingress Tool Transfer -->  
+<rule id="100052" level="12">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(wget|curl|certutil.*urlcache|bitsadmin.*transfer|Invoke-WebRequest|iwr\s)</field>
+    <description>CRITICAL: File download tool executed - potential ingress tool transfer.</description>
+    <mitre>
+        <id>T1105</id>
+    </mitre>
+</rule>  
   
 </group>
