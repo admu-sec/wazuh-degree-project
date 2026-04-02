@@ -407,5 +407,15 @@
         <id>T1105</id>
     </mitre>
 </rule>  
+
+<!-- Rule 100053: Lateral Tool Transfer -->
+<rule id="100053" level="12">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(xcopy|robocopy).*\\\\</field>
+    <description>CRITICAL: File copy to network share detected - potential lateral tool transfer.</description>
+    <mitre>
+        <id>T1570</id>
+    </mitre>
+</rule>
   
 </group>
