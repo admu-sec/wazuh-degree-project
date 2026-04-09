@@ -24,17 +24,18 @@
     <same_source_ip />
     <description>sshd: Brute force attack detected (5+ failures in 5min)</description>
     <mitre>
-      <id>T1110.001</id>
+     <id>T1110.001</id>
     </mitre>
     <group>authentication_failed,attack,brute_force,</group>
   </rule>
+
 
   <rule id="100003" level="12" frequency="10" timeframe="120">
     <if_matched_sid>100001</if_matched_sid>
     <same_user />
     <description>sshd: Password spray attack - same account targeted from multiple IP's.</description>
     <mitre>
-      <id>T1110.003</id>
+     <id>T1110.003</id>
     </mitre>
     <group>authentication_failed,password_spray,attack,</group>
   </rule>
@@ -43,7 +44,7 @@
     <if_sid>5715</if_sid>
     <description>CRITICAL: Successful SSH login after recent failed attempts - possible breach.</description>
     <mitre>
-      <id>T1078</id>
+     <id>T1078</id>
     </mitre>
     <group>authentication_success,successful_attack,</group>
   </rule>
@@ -52,7 +53,7 @@
 
 <group name="windows,syscheck,sysmon">
 
-  <!-- Noise Reduction -->
+<!-- Noise Reduction -->
   <rule id="100005" level="0">
     <if_sid>554,61603,61613</if_sid>
     <field name="win.eventdata.image">\\cleanmgr.exe</field>
@@ -78,7 +79,7 @@
   <!-- PowerShell & Mimikatz (kräver Sysmon) -->
   <rule id="100011" level="12">
     <if_sid>61699</if_sid>
-    <field name="win.eventdata.commandLine" type="pcre2">-enc|-encodedcommand|-e\s+[A-Za-z0-9+/]{50,}</field>
+    <field name="win.eventdata.commandLine" type="pcre2">-enc|-encodedcommand|-e\s+[A-Za-z0-9+/=]{50,}</field>
     <description>PowerShell encoded command execution detected</description>
     <mitre>
       <id>T1059.001</id>
@@ -89,7 +90,7 @@
 
   <rule id="100012" level="15">
     <if_sid>61699</if_sid>
-    <field name="win.eventdata.commandLine" type="pcre2">($|sekurlsa|lsadump|privilege::debug|mimikat</field>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)sekurlsa|lsadump|privilege::debug|mimikatz</field>
     <description>CRITICAL: Mimikatz credential dumping attempt detected</description>
     <mitre>
       <id>T1003.001</id>
@@ -132,7 +133,7 @@
   <!-- Registry Run Keys -->
   <rule id="100016" level="11">
     <if_sid>61699</if_sid>
-    <field name="win.eventdata.targetObject" type="pcre2">\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run\\|\\CurrentVersion\\RunOnce</field>
+    <field name="win.eventdata.targetObject" type="pcre2">\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run|\\CurrentVersion\\RunOnce</field>
     <description>Registry Run key modified - potential persistence</description>
     <mitre>
       <id>T1547.001</id>
@@ -143,7 +144,7 @@
   <rule id="100017" level="0">
     <if_sid>100016</if_sid>
     <field name="win.eventdata.details" type="pcre2">C:\\Program Files\\Microsoft Office|C:\\Program Files\\Adobe|C:\\Program Files\\Google</field>
-    <description>Ignore legitimate Run Key from trusted software</description>
+    <description>Ignore legitimate Run key from trusted software</description>
   </rule>
 
   <rule id="100018" level="14">
@@ -157,7 +158,7 @@
   </rule>
 
   <rule id="100019" level="15">
-    <if_sid>108016</if_sid>
+    <if_sid>100016</if_sid>
     <field name="win.eventdata.details" type="pcre2">powershell\.exe.*-enc|powershell\.exe.*-encodedcommand</field>
     <description>CRITICAL: Registry Run key with encoded PowerShell</description>
     <mitre>
@@ -169,8 +170,8 @@
 
   <!-- Critical Events -->
   <rule id="100020" level="15">
-    <if_sid>60800</if_sid>
-    <field name="win.system.eventID">^1102$|^1041$</field>
+    <if_sid>60000</if_sid>
+    <field name="win.system.eventID">^1102$|^104$</field>
     <description>CRITICAL: Security logs cleared! Possible cover-up activity</description>
     <mitre>
       <id>T1070.001</id>
@@ -179,7 +180,7 @@
   </rule>
 
   <rule id="100021" level="12">
-    <if_sid>60800</if_sid>
+    <if_sid>60000</if_sid>
     <field name="win.system.eventID">^2003$</field>
     <description>High Alert: Windows Firewall has been disabled or modified</description>
     <mitre>
@@ -241,19 +242,19 @@
     <group>windows,defense_evasion,</group>
   </rule>
 
-  <!-- Override Sysmon regel 92205 för PowerShell policy test scripts -->
+  <!-- Override Sysmon rule 92205 for Powershell policy test scripts -->
   <rule id="100027" level="0">
     <if_sid>61603</if_sid>
     <field name="win.system.eventID">^1$</field>
     <field name="win.eventdata.commandLine" type="pcre2">PSScriptPolicyTest</field>
-    <description>Whitelist: Sysmon Event 1 - PowerShell policy test scripts</description>
+    <description>Whitelist: Sysmon Event 1 - Powershell policy test scripts</description>
   </rule>
 
 </group>
 
-<!-- ====================================== -->
-<!-- Linux Security Rules (4 rules) -->
-<!-- ====================================== -->
+  <!-- =============================== -->
+  <!-- Linux Security Rules (4 rules)
+  <!-- =============================== -->
 
 <group name="local,syscheck,linux">
 
@@ -269,7 +270,7 @@
     <group>syscheck,rootcheck,</group>
   </rule>
 
-  <!-- Rule 100041: SSH Authorized keys Modified -->
+  <!-- Rule 100041: SSH Authorized Keys Modified -->
   <rule id="100041" level="10">
     <if_sid>550</if_sid>
     <match>authorized_keys</match>
@@ -283,8 +284,8 @@
   <!-- Rule 100042: Cron Job Created/Modified -->
   <rule id="100042" level="10">
     <if_sid>550</if_sid>
-    <field name="path" type="pcre2">/etc/cron|/var/spool/cron</field>
-    <description>Cron Job modified - potential persistence mechanism.</description>
+    <field name="file" type="pcre2">/etc/cron|/var/spool/cron</field>
+    <description>Cron job modified - potential persistence mechanism.</description>
     <mitre>
       <id>T1053.003</id>
     </mitre>
@@ -300,122 +301,123 @@
     </mitre>
     <group>privilege_escalation,</group>
   </rule>
-
 </group>
 
-<!-- ====================================== -->
-<!-- Windows Security Rules -->
-<!-- ====================================== -->
 
-<!-- Windows Security Rules -->
+  <!-- =============================== -->
+  <!-- Windows Security Ruls
+  <!-- =============================== -->
+
 <group name="local,windows,attack">
 
-    <!-- Rule 100044: LOLBins Detection -->
-    <rule id="100044" level="12">
-        <if_group>sysmon_event1</if_group>
-        <field name="win.eventdata.commandLine" type="pcre2">certutil|bitsadmin|mshta|regsvr32|rundll32</field>
-        <description>CRITICAL: Living-off-the-land binary (LOLBin) executed - potential attack.</description>
-        <mitre>
-            <id>T1218.003</id>
-            <id>T1218.005</id>
-            <id>T1218.010</id>
-            <id>T1218.011</id>
-        </mitre>
-        <group>lolbins,defense_evasion,</group>
-    </rule>
+  <!-- Rule 100044: LOLBins Detection -->
+  <rule id="100044" level="12">
+  <if_group>sysmon_event1</if_group>
+  <field name="win.eventdata.commandLine" type="pcre2">certuil|bitsadmin|mshta|regsvr32|rundll32</field>
+  <description>CRITICAL: Living off the land binary (LOLBin) executed - potential attack.</description>
+  <mitre>
+    <id>T1218.003</id>
+    <id>T1218.005</id>
+    <id>T1218.010</id>
+    <id>T1218.011</id>
+  </mitre>
+  <group>lolbins,defense_evasion,</group>
+  </rule>
 
-    <!-- Rule 100045: Scheduled Task Created -->
-    <rule id="100045" level="10">
-        <if_sid>60103</if_sid>
-        <field name="win.system.eventID">^4698$</field>
-        <description>CRITICAL: Scheduled Task created - potential persistence mechanism.</description>
-        <mitre>
-            <id>T1053.005</id>
-        </mitre>
-        <group>scheduled_task,persistence,</group>
-    </rule>
+  <!-- Rule 100045: Scheduled Task Created -->
+  <rule id="100045" level="10">
+  <if_sid>60103</if_sid>
+  <field name="win.system.eventID">^4698$</field>
+  <description>CRITICAL: Scheduled Task created - potential persistence mechanism.</description>
+  <mitre>
+    <id>T1053.005</id>
+  </mitre>
+  <group>scheduled_task,persistence,</group>
+  </rule>
 
-<!-- Rule 100046: Process Injection - ProcessAccess -->
-<rule id="100046" level="12">
-    <if_sid>92900</if_sid>
-    <field name="win.eventdata.targetImage" type="pcre2">lsass.exe|winlogon.exe|csrss.exe</field>
-    <description>CRITICAL: Suspicious process access - potential process injection or credential dumping.</description>
-    <mitre>
-        <id>T1055</id>
-        <id>T1003.001</id>
-    </mitre>
-    <group>process_injection,credential_access,</group>
-</rule>
+  <!-- Rule 100046: Process Injection -->
+  <rule id="100046" level="12">
+  <if_sid>92900</if_sid>
+  <field name="win.eventdata.targetImage" type="pcre2">lsass.exe|winlogon.exe|csrss.exe</field>
+  <description>CRITICAL: Suspicious process access - potential process injection or credential dumping.</description>
+  <mitre>
+    <id>T1055</id>
+    <id>T1003.001</id>
+  </mitre>
+  <group>process_injection,credential_access,</group>
+  </rule>
 
-  <!-- Rule 100047: Suspicious Named Pipe - C2/Cobalt Strike -->
-<rule id="100047" level="12">
-    <if_group>sysmon_event_17</if_group>
-    <field name="win.eventdata.pipeName" type="pcre2">\\postex_|\\msagent_|\\status_|MSSE-|cachedump|wceservicepipe</field>
-    <description>CRITICAL: Suspicious named pipe detected - potential C2 or credential dumping tool.</description>
-    <mitre>
-        <id>T1055.001</id>
-    </mitre>
-    <group>named_pipe,c2,defense_evasion,</group>
-</rule>
+  <!-- Rule 100047: Suspicious Name Pipe -C2/Cobalt Strike -->
+  <rule id="100047" level="12">
+  <if_group>sysmon_event_17</if_group>
+  <field name="win.eventdata.pipeName" type="pcre2">\\postex_|\\msagent_|\\status_|MSSE-|cachedump|wceservicepipe</field>
+  <description>CRITICAL: Suspicious named pipe detected - potential C2 or credential dumping tool.</description>
+  <mitre>
+    <id>T1055.001</id>
+  </mitre>
+  <group>named_pipe,c2,defensee_evasion,</group>
+  </rule>
 
-<!-- Rule 100048: WMI Event Subscription -->
-<rule id="100048" level="12">
+  <!-- Rule 100048: WMI Event Subscription -->
+  <rule id="100048" level="12">
     <if_sid>89502</if_sid>
     <description>CRITICAL: WMI Event Subscription created - potential persistence mechanism.</description>
     <mitre>
-        <id>T1546.003</id>
+      <id>T1546.003</id>
     </mitre>
     <group>wmi,persistence,</group>
-</rule>
+  </rule>
 
-<!-- Rule 100049: Screen Capture -->
-<rule id="100049" level="12">
-  <if_sid>61603</if_sid>
-  <field name="win.eventdata.image" type="pcre2">(?i)(snippingtool|screencapture|nircmd)</field>
-  <description>CRITICAL: Screen capture tool executed - potential data collection.</description>
-  <mitre>
-    <id>T1113</id>
-  </mitre>
-</rule>
+  <!-- Rule 100049: Screen Capture -->
+  <rule id="100049" level="12">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.image" type="pcre2">(?i)(snippingtool|screencapture|nircmd)</field>
+    <description>CRITICAL: Screen capture tool executed - potential data collection.</description>
+    <mitre>
+      <id>T1113</id>
+    </mitre>
+  </rule>
 
-<!-- Rule 100050: Process Discovery -->
-<rule id="100050" level="8">
-  <if_sid>61603</if_sid>
-  <field name="win.eventdata.commandLine" type="pcre2">(?i)(tasklist|Get-Process|wmic)</field>
-  <description>Process discovery command executed - reconnaissance activity.</description>
-  <mitre>
-    <id>T1057</id>
-  </mitre>
-</rule>
+  <!-- Rule 100050: Process Discovery -->
+  <rule id="100050" level="8">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(tasklist|Get-Process|wmic)</field>
+    <description>Process discovery command executed - reconnaissance activity.</description>
+    <mitre>
+      <id>T1057</id>
+    </mitre>
+  </rule>
 
-<!-- Rule 100051: Archive Collected Data -->
-<rule id="100051" level="12">
-  <if_sid>61603</if_sid>
-  <field name="win.eventdata.image" type="pcre2">(?i)(7z|winrar|compress|zip)</field>
-  <description>CRITICAL: Archiving tool executed - potential data staging before exfiltration.</description>
-  <mitre>
-    <id>T1560</id>
-  </mitre>
-</rule>
+  <!-- Rule 100051: Archive Collected Data -->
+  <rule id="100051" level="12">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(Compress-Archive|compress|7z|zip|rar)</field>
+    <description>CRITICAL: Archiving tool executed - potential data staging before exfiltration.</description>
+    <mitre>
+      <id>T1560</id>
+    </mitre>
+  </rule>
 
-<!-- Rule 100052: Ingress Tool Transfer -->  
-<rule id="100052" level="12">
+  <!-- Rule 100052: Ingress Tool Transfer -->
+  <rule id="100052" level="12">
     <if_sid>61603</if_sid>
     <field name="win.eventdata.commandLine" type="pcre2">(?i)(wget|curl|certutil.*urlcache|bitsadmin.*transfer|Invoke-WebRequest|iwr\s)</field>
-    <description>CRITICAL: File download tool executed - potential ingress tool transfer.</description>
+    <description>CRITICAL: File Download tool executed - potential ingress tool transfer.</description>
     <mitre>
-        <id>T1105</id>
+      <id>T1105</id>
     </mitre>
-</rule>  
+  </rule>
 
-<!-- Rule 100053: Lateral Tool Transfer -->
-<rule id="100053" level="12">
+
+  <!-- Rule 100053: Lateral Tool Transfer -->
+  <rule id="100053" level="12">
     <if_sid>61603</if_sid>
     <field name="win.eventdata.commandLine" type="pcre2">(?i)(xcopy|robocopy).*\\\\</field>
     <description>CRITICAL: File copy to network share detected - potential lateral tool transfer.</description>
     <mitre>
-        <id>T1570</id>
+      <id>T1570</id>
     </mitre>
-</rule>
-  
+  </rule>
+
+
 </group>
