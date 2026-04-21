@@ -419,5 +419,27 @@
     </mitre>
   </rule>
 
+  <!-- Rule 100054: Create Account -->
+<rule id="100054" level="12">
+  <if_sid>60109</if_sid>
+  <field name="win.system.eventID">^4720$</field>
+  <description>CRITICAL: New user account created.</description>
+  <mitre>
+    <id>T1136</id>
+  </mitre>
+</rule>
+
+<!-- Rule 100055: Domain Account Logon -->
+<rule id="100055" level="12">
+  <if_sid>60106</if_sid>
+  <field name="win.system.eventID">^4624$</field>
+  <field name="win.eventdata.logonType">^3$</field>
+  <field name="win.eventdata.targetDomainName" type="pcre2">TUCLAB</field>
+  <description>HIGH: Domain account network logon detected.</description>
+  <mitre>
+    <id>T1078.002</id>
+  </mitre>
+</rule>
+
 
 </group>
