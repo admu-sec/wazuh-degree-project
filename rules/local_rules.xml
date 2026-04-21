@@ -441,5 +441,16 @@
   </mitre>
 </rule>
 
+  <!-- Rule 100056: Kerberoasting (T1558.003) -->
+<rule id="100056" level="12">
+  <if_sid>60106</if_sid>
+  <field name="win.system.eventID">^4769$</field>
+  <field name="win.eventdata.ticketEncryptionType">^0x17$</field>
+  <field name="win.eventdata.targetDomainName" type="pcre2">TUCLAB</field>
+  <description>CRITICAL: Possible Kerberoasting - RC4 encrypted service ticket requested.</description>
+  <mitre>
+    <id>T1558.003</id>
+  </mitre>
+</rule>
 
 </group>
