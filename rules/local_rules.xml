@@ -336,7 +336,7 @@
   </rule>
 
   <!-- Rule 100046: Process Injection -->
-  <rule id="100046" level="12">
+  <rule id="100046" level="15">
   <if_sid>92900</if_sid>
   <field name="win.eventdata.targetImage" type="pcre2">lsass.exe|winlogon.exe|csrss.exe</field>
   <description>CRITICAL: Suspicious process access - potential process injection or credential dumping.</description>
@@ -348,7 +348,7 @@
   </rule>
 
   <!-- Rule 100047: Suspicious Name Pipe -C2/Cobalt Strike -->
-  <rule id="100047" level="12">
+  <rule id="100047" level="14">
   <if_group>sysmon_event_17</if_group>
   <field name="win.eventdata.pipeName" type="pcre2">\\postex_|\\msagent_|\\status_|MSSE-|cachedump|wceservicepipe</field>
   <description>CRITICAL: Suspicious named pipe detected - potential C2 or credential dumping tool.</description>
@@ -369,7 +369,7 @@
   </rule>
 
   <!-- Rule 100049: Screen Capture -->
-  <rule id="100049" level="12">
+  <rule id="100049" level="10">
     <if_sid>61603</if_sid>
     <field name="win.eventdata.image" type="pcre2">(?i)(snippingtool|screencapture|nircmd)</field>
     <description>CRITICAL: Screen capture tool executed - potential data collection.</description>
@@ -399,7 +399,7 @@
   </rule>
 
   <!-- Rule 100052: Ingress Tool Transfer -->
-  <rule id="100052" level="12">
+  <rule id="100052" level="13">
     <if_sid>61603</if_sid>
     <field name="win.eventdata.commandLine" type="pcre2">(?i)(wget|curl|certutil.*urlcache|bitsadmin.*transfer|Invoke-WebRequest|iwr\s)</field>
     <description>CRITICAL: File Download tool executed - potential ingress tool transfer.</description>
@@ -410,7 +410,7 @@
 
 
   <!-- Rule 100053: Lateral Tool Transfer -->
-  <rule id="100053" level="12">
+  <rule id="100053" level="13">
     <if_sid>61603</if_sid>
     <field name="win.eventdata.commandLine" type="pcre2">(?i)(xcopy|robocopy).*\\\\</field>
     <description>CRITICAL: File copy to network share detected - potential lateral tool transfer.</description>
@@ -430,7 +430,7 @@
 </rule>
 
 <!-- Rule 100055: Domain Account Logon -->
-<rule id="100055" level="12">
+<rule id="100055" level="8">
   <if_sid>60106</if_sid>
   <field name="win.system.eventID">^4624$</field>
   <field name="win.eventdata.logonType">^3$</field>
@@ -442,7 +442,7 @@
 </rule>
 
   <!-- Rule 100056: Kerberoasting (T1558.003) -->
-<rule id="100056" level="12">
+<rule id="100056" level="15">
   <if_sid>60106</if_sid>
   <field name="win.system.eventID">^4769$</field>
   <field name="win.eventdata.ticketEncryptionType">^0x17$</field>
