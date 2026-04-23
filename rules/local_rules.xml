@@ -111,7 +111,7 @@
 
   <!-- New Service -->
   <rule id="100014" level="10">
-    <if_sid>60612</if_sid>
+    <if_sid>61138</if_sid>
     <field name="win.system.eventID">^7045$</field>
     <description>New Windows service installed - potential persistence mechanism</description>
     <mitre>
