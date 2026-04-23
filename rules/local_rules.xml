@@ -132,8 +132,8 @@
 
   <!-- Registry Run Keys -->
   <rule id="100016" level="11">
-    <if_sid>61699</if_sid>
-    <field name="win.eventdata.targetObject" type="pcre2">\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run|\\CurrentVersion\\RunOnce</field>
+    <if_sid>92041</if_sid>
+    <field name="win.eventdata.commandLine" type="pcre2">CurrentVersion</field>
     <description>Registry Run key modified - potential persistence</description>
     <mitre>
       <id>T1547.001</id>
