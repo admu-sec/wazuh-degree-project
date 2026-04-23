@@ -180,7 +180,7 @@
   </rule>
 
   <rule id="100021" level="12">
-    <if_sid>60000</if_sid>
+    <if_sid>67005</if_sid>
     <field name="win.system.eventID">^2003$</field>
     <description>High Alert: Windows Firewall has been disabled or modified</description>
     <mitre>
