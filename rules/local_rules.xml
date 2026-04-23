@@ -78,7 +78,7 @@
 
   <!-- PowerShell & Mimikatz (kräver Sysmon) -->
   <rule id="100011" level="12">
-    <if_sid>61699</if_sid>
+    <if_sid>92027</if_sid>
     <field name="win.eventdata.commandLine" type="pcre2">-enc|-encodedcommand|-e\s+[A-Za-z0-9+/=]{50,}</field>
     <description>PowerShell encoded command execution detected</description>
     <mitre>
