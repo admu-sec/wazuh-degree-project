@@ -170,7 +170,7 @@
 
   <!-- Critical Events -->
   <rule id="100020" level="15">
-    <if_sid>60000</if_sid>
+    <if_sid>63104</if_sid>
     <field name="win.system.eventID">^1102$|^104$</field>
     <description>CRITICAL: Security logs cleared! Possible cover-up activity</description>
     <mitre>
