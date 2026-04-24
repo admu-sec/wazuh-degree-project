@@ -272,7 +272,7 @@
 
   <!-- Rule 100041: SSH Authorized Keys Modified -->
   <rule id="100041" level="10">
-    <if_sid>550</if_sid>
+    <if_sid>550,554</if_sid>
     <match>authorized_keys</match>
     <description>CRITICAL: SSH authorized_keys file modified - potential backdoor.</description>
     <mitre>
@@ -283,7 +283,7 @@
 
   <!-- Rule 100042: Cron Job Created/Modified -->
   <rule id="100042" level="10">
-    <if_sid>550</if_sid>
+    <if_sid>550,554</if_sid>
     <field name="file" type="pcre2">/etc/cron|/var/spool/cron</field>
     <description>Cron job modified - potential persistence mechanism.</description>
     <mitre>
