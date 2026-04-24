@@ -199,16 +199,16 @@
     <group>ransomware,attack,</group>
   </rule>
 
-  <!-- Lateral Movement -->
-  <rule id="100023" level="11">
-    <if_sid>61699</if_sid>
-    <field name="win.eventdata.image" type="pcre2">\\psexec\.exe$|\\psexesvc\.exe$</field>
-    <description>PsExec execution detected - potential lateral movement</description>
-    <mitre>
-      <id>T1569.002</id>
-    </mitre>
-    <group>windows,lateral_movement,</group>
-  </rule>
+<!-- Lateral Movement -->
+<rule id="100023" level="11">
+  <if_sid>61603</if_sid>
+  <field name="win.eventdata.image" type="pcre2">(?i)psexec\.exe|psexesvc\.exe</field>
+  <description>PsExec execution detected - potential lateral movement</description>
+  <mitre>
+    <id>T1569.002</id>
+  </mitre>
+  <group>windows,lateral_movement,</group>
+</rule>
 
 <!--
   <rule id="100024" level="8">
