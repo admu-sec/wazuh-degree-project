@@ -233,7 +233,7 @@
 
   <!-- Defender Disabled -->
   <rule id="100026" level="13">
-    <if_sid>60000</if_sid>
+    <if_sid>62152</if_sid>
     <field name="win.system.eventID">^5001$</field>
     <description>CRITICAL: Windows Defender Real-Time Protection disabled</description>
     <mitre>
