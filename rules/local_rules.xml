@@ -294,7 +294,7 @@
 
   <!-- Rule 100043: Suspicious Sudo Usage -->
   <rule id="100043" level="8">
-    <match>sudo: </match>
+    <if_sid>5402</if_sid>
     <description>Sudo command executed by non-privileged user.</description>
     <mitre>
       <id>T1548.003</id>
