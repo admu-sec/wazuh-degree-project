@@ -210,8 +210,9 @@
     <group>windows,lateral_movement,</group>
   </rule>
 
+<!--
   <rule id="100024" level="8">
-    <if_sid>60000</if_sid>
+    <if_sid>67017</if_sid>
     <field name="win.system.eventID">^5140$</field>
     <description>Administrative share accessed - potential lateral movement</description>
     <mitre>
@@ -219,7 +220,8 @@
     </mitre>
     <group>windows,lateral_movement,smb,</group>
   </rule>
-
+-->
+  
   <!-- Credential Dumping -->
   <rule id="100025" level="15">
     <if_sid>61699</if_sid>
