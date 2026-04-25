@@ -12,12 +12,12 @@
 This repository contains custom Wazuh SIEM rules and Active Response configurations designed to detect and respond to modern cyber threats in a Windows/Linux hybrid environment.
 
 **Total Implementation:**
-- **27 custom security rules** (4 SSH + 19 Windows + 4 Linux)
-- **16 MITRE ATT&CK techniques covered**
+
+- **36 custom security rules** (4 SSH + 23 Windows + 4 Linux + 5 other)
+- **33 unique MITRE ATT&CK techniques covered**
 - **3 Active Response automations**
 - **6 whitelisted critical systems**
-- **File Integrity Monitoring (FIM)** enabled
-
+- **File Integrity Monitoring (FIM) enabled**
 ---
 
 ## 🏗️ Architecture
