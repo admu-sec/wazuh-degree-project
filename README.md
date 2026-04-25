@@ -3,7 +3,7 @@
 **Project:** Optimizing Wazuh SIEM for Threat Detection.  
 **Author:** admu-sec  
 **Date:** 2026-02-27  
-**Version:** 1.1
+**Version:** 1.2
 
 ---
 
@@ -435,15 +435,23 @@ This configuration is provided as-is for educational and security research purpo
 **admu-sec**  
 Project: Wazuh SIEM Optimization  
 Date: February 2026  
-Version: 1.1 (Updated with Linux FIM & Security Rules)
+Version: 1.2 (Rule fixes, verification & PsExec detection)
 
 ---
 
 ## 📋 Changelog
 
+### Version 1.2 (2026-04-24)
+- ✅ Fixed `if_sid` references for rules 100041, 100042, 100043, 100026, 100012, 100023
+- ✅ Fixed rule 100003 (Password Spray) – replaced `same_user` with `same_source_ip`
+- ✅ Added PsExec detection rule 100023 (T1569.002) with correct `if_sid` 61603
+- ✅ Rule 100024 (SMB Admin Shares) deprecated – covered by built-in rule 67017 (T1021.002)
+- ✅ Verified all rules in production against live events
+- ✅ Total rules: 27 → 36
+
 ### Version 1.1 (2026-02-27)
 - ✅ Added File Integrity Monitoring (FIM) for Linux
-- ✅ Added 4 Linux security rules (100040-100043)
+- ✅ Added 4 Linux security rules (100040–100043)
 - ✅ Increased MITRE ATT&CK coverage to 16 techniques (+4)
 - ✅ Verified rule 100041 (SSH backdoor detection) in production
 - ✅ Total rules: 23 → 27
