@@ -1,8 +1,8 @@
 # Wazuh SIEM Configuration
 
-**Project:** Optimizing Wazuh SIEM for Threat Detection.  
+**Project:** Optimizing Wazuh SIEM for Threat Detection  
 **Author:** admu-sec  
-**Date:** 2026-02-27  
+**Date:** April 2026  
 **Version:** 1.2
 
 ---
@@ -18,9 +18,11 @@ This repository contains custom Wazuh SIEM rules and Active Response configurati
 - **3 Active Response automations**
 - **6 whitelisted critical systems**
 - **File Integrity Monitoring (FIM) enabled**
+
 ---
 
 ## 🏗️ Architecture
+
 ```
 Wazuh Manager (10.46.21.108) + Dashboard
     ↓
@@ -50,7 +52,6 @@ wazuh-degree-project/
 └── sysmon/
     ├── sysmonconfig-DC.xml      # Sysmon config for AD/DC
     └── sysmonconfig-W1.xml      # Sysmon config for W1 (incl. LSASS entry)
-```
 ```
 
 ---
@@ -170,23 +171,10 @@ wazuh-degree-project/
 | 100049 | Screen Capture | 10 | T1113 | ✅ |
 | 100050 | Process Discovery | 8 | T1057 | ✅ |
 | 100051 | Data Compressed/Archived | 11 | T1560 | ✅ |
+
 ---
 
-## Adversary Emulation – Caldera (8 rules)
-
-| Rule ID | Description | Level | MITRE ATT&CK |
-|---------|-------------|-------|--------------|
-| 100044 | Signed Binary Proxy Execution (Msiexec) | 11 | T1218.007 | ✅ |
-| 100045 | Scheduled Task Created | 11 | T1053.005 | ✅ |
-| 100046 | LSASS Access / Mimikatz | 15 | T1003.001 | ✅ |
-| 100047 | Process Injection | 12 | T1055.001 | ✅ |
-| 100048 | WMI Event Subscription | 13 | T1546.003 | ✅ |
-| 100049 | Screen Capture | 10 | T1113 | ✅ |
-| 100050 | Process Discovery | 8 | T1057 | ✅ |
-| 100051 | Data Compressed/Archived | 11 | T1560 | ✅ |
----
-
-## 📂 File Integrity Monitoring (FIM) **NEW!**
+## 📂 File Integrity Monitoring (FIM)
 
 ### Monitored Directories
 
@@ -195,9 +183,9 @@ wazuh-degree-project/
 | `/etc` | Periodic | System configuration files |
 | `/usr/bin`, `/usr/sbin` | Periodic | System binaries |
 | `/bin`, `/sbin`, `/boot` | Periodic | Critical boot files |
-| **`/root/.ssh`** | **Realtime** | **SSH backdoor detection** |
-| **`/var/spool/cron`** | **Realtime** | **Cron persistence detection** |
-| **`/var/ossec/etc`** | **Realtime** | **Wazuh config tampering** |
+| `/root/.ssh` | Realtime | SSH backdoor detection |
+| `/var/spool/cron` | Realtime | Cron persistence detection |
+| `/var/ossec/etc` | Realtime | Wazuh config tampering |
 
 **Features:**
 - ✅ **Realtime monitoring** with inotify
@@ -220,6 +208,7 @@ wazuh-degree-project/
 | 100022 | Ransomware | 1 hour | All agents |
 
 ### Whitelisted Systems
+
 - `127.0.0.1` - Localhost
 - `10.46.21.108` - Wazuh Manager + Dashboard
 - `10.46.21.60` - Wazuh Indexer (Elasticsearch)
@@ -236,68 +225,84 @@ wazuh-degree-project/
 
 ## 🎯 MITRE ATT&CK Coverage
 
-### Tactics & Techniques (16 unique)
+### Tactics & Techniques (33 unique techniques)
 
 | Tactic | Technique | Rules |
 |--------|-----------|-------|
 | **Initial Access** | T1078 (Valid Accounts) | 100001, 100004, 100010 |
 | **Execution** | T1059.001 (PowerShell) | 100011, 100019 |
+| | T1569.002 (PsExec) | 100023 |
 | **Persistence** | T1543.003 (Windows Service) | 100014 |
 | | T1547.001 (Registry Run Keys) | 100016, 100018, 100019 |
-| | **T1098.004 (SSH Authorized Keys)** | **100041** ✅ |
-| | **T1053.003 (Scheduled Task: Cron)** | **100042** ✅ |
+| | T1098.004 (SSH Authorized Keys) | 100041 |
+| | T1053.003 (Scheduled Task: Cron) | 100042 |
+| | T1053.005 (Scheduled Task: Windows) | 100045 |
+| | T1546.003 (WMI Event Subscription) | 100048 |
+| | T1136 (Create Account) | 100054 |
+| **Privilege Escalation** | T1548.003 (Sudo) | 100043 |
+| | T1098 (Account Manipulation) | 100040 |
+| | T1055.001 (Process Injection) | 100047 |
 | **Defense Evasion** | T1027 (Obfuscation) | 100011 |
+| | T1036 (Masquerading) | 100015 |
 | | T1070.001 (Clear Logs) | 100020 |
+| | T1218.007 (Msiexec) | 100044 |
 | | T1562.001 (Disable AV) | 100026 |
 | | T1562.004 (Disable Firewall) | 100021 |
-| | **T1222 (File Permissions Modification)** | **100040** ✅ |
-| **Privilege Escalation** | **T1548.003 (Sudo and Sudo Caching)** | **100043** ✅ |
-| | **T1098 (Account Manipulation)** | **100040** ✅ |
-| **Credential Access** | T1003.001 (LSASS/Mimikatz) | 100012, 100025 |
-| | T1110 (Brute Force) | 100002, 100003, 100013 |
-| **Lateral Movement** | T1021.002 (SMB Shares) | 100024 |
-| | T1569.002 (PsExec) | 100023 |
+| | T1222 (File Permissions Modification) | 100040 |
+| **Credential Access** | T1003.001 (LSASS/Mimikatz) | 100012, 100025, 100046 |
+| | T1110.001 (Password Guessing) | 100001, 100002 |
+| | T1110.003 (Password Spraying) | 100003 |
+| | T1110 (Brute Force) | 100013 |
+| | T1558.003 (Kerberoasting) | 100056 |
+| **Discovery** | T1057 (Process Discovery) | 100050 |
+| | T1078.002 (Domain Accounts) | 100055 |
+| **Lateral Movement** | T1021.002 (SMB Shares) | Built-in rule 67017 |
+| | T1570 (Lateral Tool Transfer) | 100053 |
+| **Collection** | T1113 (Screen Capture) | 100049 |
+| | T1560 (Archive Collected Data) | 100051 |
+| **Command & Control** | T1105 (Ingress Tool Transfer) | 100052 |
 | **Impact** | T1490 (Inhibit Recovery) | 100022 |
-
-**New techniques added (4):**
-- ✅ T1098.004 - SSH Authorized Keys
-- ✅ T1053.003 - Scheduled Task: Cron
-- ✅ T1222 - File Permissions Modification
-- ✅ T1548.003 - Sudo and Sudo Caching
 
 ---
 
 ## 📦 Installation
 
 ### 1. Deploy Custom Rules
+
 ```bash
-# On Wazuh Manager
 sudo cp rules/local_rules.xml /var/ossec/etc/rules/local_rules.xml
 sudo chown root:wazuh /var/ossec/etc/rules/local_rules.xml
 sudo chmod 640 /var/ossec/etc/rules/local_rules.xml
 ```
 
-### 2. Configure Active Response & FIM
-```bash
-# Backup original configuration
-sudo cp /var/ossec/etc/ossec.conf /var/ossec/etc/ossec.conf.backup
+### 2. Deploy Custom Decoder
 
-# Merge sections from config/ossec.conf
-sudo nano /var/ossec/etc/ossec.conf
-# Add: <global> (whitelist), <command>, <active-response>, <syscheck>
+```bash
+sudo cp config/local_decoder.xml /var/ossec/etc/decoders/local_decoder.xml
+sudo chown root:wazuh /var/ossec/etc/decoders/local_decoder.xml
+sudo chmod 640 /var/ossec/etc/decoders/local_decoder.xml
 ```
 
-### 3. Validate & Restart
-```bash
-# Validate configuration
-sudo /var/ossec/bin/wazuh-control info
+### 3. Configure Active Response & FIM
 
-# Restart Wazuh Manager
+```bash
+sudo cp /var/ossec/etc/ossec.conf /var/ossec/etc/ossec.conf.backup
+sudo cp config/ossec.conf /var/ossec/etc/ossec.conf
+```
+
+### 4. Validate & Restart
+
+```bash
 sudo systemctl restart wazuh-manager
 sudo systemctl status wazuh-manager
-
-# Verify FIM loaded
 sudo tail -100 /var/ossec/logs/ossec.log | grep -i "monitoring directory"
+```
+
+### 5. Deploy Sysmon on Windows Agents
+
+```powershell
+# Use sysmonconfig-W1.xml for W1, sysmonconfig-DC.xml for DC
+sysmon64.exe -accepteula -i C:\Sysmon\sysmonconfig.xml
 ```
 
 ---
@@ -305,76 +310,52 @@ sudo tail -100 /var/ossec/logs/ossec.log | grep -i "monitoring directory"
 ## 🧪 Testing
 
 ### Test SSH Brute Force Detection
+
 ```bash
-# From external machine (not whitelisted)
-for i in {1..6}; do
-  ssh root@WAZUH_MANAGER_IP
-  sleep 2
-done
-# Enter wrong password each time
+for i in {1..6}; do ssh root@WAZUH_MANAGER_IP; sleep 2; done
 ```
 
-**Expected Result:**
-- Rule 100002 triggers after 5th attempt
-- Active Response blocks IP for 10 minutes
-- Alert visible in Wazuh Dashboard
+**Expected Result:** Rule 100002 triggers, IP blocked for 10 minutes.
 
 ---
 
-### Test Mimikatz Detection (Simulation)
+### Test Mimikatz Detection
+
 ```powershell
-# On Windows DC (PowerShell as Admin)
-powershell.exe -Command "Write-Host 'Testing sekurlsa::logonpasswords detection'"
+Set-MpPreference -DisableRealtimeMonitoring $true
+.\mimikatz.exe "sekurlsa::logonpasswords" "exit"
 ```
 
-**Expected Result:**
-- Rule 100012 triggers (Level 15 - Critical)
-- Alert shows in Dashboard
-- DC remains whitelisted (no blocking)
+**Expected Result:** Rule 100012 triggers (Level 15), IP blocked for 1 hour.
 
 ---
 
-### Test Linux FIM - SSH Backdoor Detection **NEW!**
+### Test Linux FIM – SSH Backdoor
+
 ```bash
-# On Wazuh Manager
-sudo mkdir -p /root/.ssh
-echo "ssh-rsa TEST_$(date +%s) test@wazuh" | sudo tee -a /root/.ssh/authorized_keys
-
-# Wait 10 seconds
+sudo sh -c 'echo "# test" >> /root/.ssh/authorized_keys'
 sleep 10
-
-# Verify alert
 sudo grep '"id":"100041"' /var/ossec/logs/alerts/alerts.json | tail -1
 ```
 
-**Expected Result:** ✅ **VERIFIED**
-- Rule 100041 triggers (Level 10)
-- Alert: "SSH authorized_keys file modified - potential backdoor"
-- MITRE T1098.004 mapping
-- Realtime detection (<10 seconds)
+**Expected Result:** Rule 100041 triggers (Level 10), MITRE T1098.004.
 
 ---
 
-### Test Critical File Modification **NEW!**
-```bash
-# Modify /etc/passwd
-echo "# Wazuh test - $(date)" | sudo tee -a /etc/passwd
+### Test PsExec Detection
 
-# Wait and verify
-sleep 10
-sudo grep '"id":"100040"' /var/ossec/logs/alerts/alerts.json
+```cmd
+C:\PsExec.exe /accepteula cmd.exe /c hostname
 ```
 
-**Expected Result:**
-- Rule 100040 triggers (Level 12 - CRITICAL)
-- Alert: "System authentication file modified"
+**Expected Result:** Rule 100023 triggers (Level 11), MITRE T1569.002.
 
 ---
 
 ## 📊 Dashboard Verification
 
 1. Navigate to **Security events** → **Events**
-2. Filter: `rule.id:(100002 OR 100012 OR 100041 OR 100042)`
+2. Filter: `rule.id:(100002 OR 100012 OR 100041 OR 100023)`
 3. View MITRE ATT&CK mapping: **Threats** → **MITRE ATT&CK**
 4. Check FIM events: **File Integrity** → **Files changed**
 
@@ -386,38 +367,31 @@ sudo grep '"id":"100040"' /var/ossec/logs/alerts/alerts.json
 - All infrastructure IPs are whitelisted to maintain visibility
 - Active Response will NOT block whitelisted agents
 - External attackers are still blocked automatically
-- Agents can always communicate with Manager even during attacks
 
 ### False Positive Management
-- Rules 100005-100006 filter common Windows processes
+- Rules 100005–100006 filter common Windows processes
 - Rule 100017 whitelists legitimate software in Registry
 - FIM ignores: `/etc/mtab`, `/etc/resolv.conf`, `/etc/adjtime`
-
-### Defense in Depth
-Even with whitelisted agents, multiple security layers remain active:
-- ✅ Alert generation and logging
-- ✅ Sysmon process/network monitoring
-- ✅ File Integrity Monitoring (realtime)
-- ✅ MITRE ATT&CK mapping
-- ✅ Historical forensics data
-- ✅ Dashboard visualization
 
 ---
 
 ## 📝 Requirements
 
-- **Wazuh Manager:** 4.9.x
+- **Wazuh Manager:** 4.14.1
 - **Wazuh Agents:** Windows 10/11, Windows Server 2019/2022/2025
-- **Sysmon:** Installed on Windows agents (for rules 100011-100019, 100023, 100025)
+- **Sysmon:** v15.15 on Windows agents
 - **Network:** Agents must communicate with Manager on port 1514/TCP
-- **Linux:** Ubuntu 24.04 or compatible for Wazuh Manager
+- **Linux:** Amazon Linux 2023 (Wazuh Manager)
 
 ---
 
 ## 🔧 Completed Enhancements
 
-- [x] **File Integrity Monitoring (FIM)** for Linux critical files ✅
-- [x] **Linux-specific rules** (authorized_keys, cron, sudo, /etc modifications) ✅
+- [x] File Integrity Monitoring (FIM) for Linux critical files ✅
+- [x] Linux-specific rules (authorized_keys, cron, sudo, /etc modifications) ✅
+- [x] Caldera adversary emulation rules (100044–100051) ✅
+- [x] PsExec detection (100023) ✅
+- [x] Fixed if_sid references for all rules ✅
 - [ ] Vulnerability Detection (CVE scanning)
 - [ ] Security Configuration Assessment (CIS benchmarks)
 - [ ] Email/Slack alert integration
@@ -429,37 +403,33 @@ Even with whitelisted agents, multiple security layers remain active:
 
 ### Scenario 1: SSH Backdoor
 ```bash
-# Attacker adds their SSH key
 echo "ssh-rsa AAAA... attacker@evil.com" >> /root/.ssh/authorized_keys
 ```
 **Wazuh:** ✅ Rule 100041 → Alert (Level 10) → MITRE T1098.004
 
----
-
-### Scenario 2: Privilege Escalation
+### Scenario 2: Privilege Escalation via sudoers
 ```bash
-# Attacker adds themselves to sudoers
 echo "attacker ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ```
-**Wazuh:** ✅ Rule 100040 → Alert (Level 12 - CRITICAL) → MITRE T1222, T1098
-
----
+**Wazuh:** ✅ Rule 100040 → Alert (Level 12) → MITRE T1222, T1098
 
 ### Scenario 3: Malware Persistence via Cron
 ```bash
-# Malware creates scheduled backdoor
 echo "0 * * * * /tmp/.hidden/backdoor.sh" >> /var/spool/cron/root
 ```
 **Wazuh:** ✅ Rule 100042 → Alert (Level 10) → MITRE T1053.003
 
----
-
 ### Scenario 4: Mimikatz Credential Theft
 ```powershell
-# Attacker runs Mimikatz on Windows DC
 mimikatz.exe sekurlsa::logonpasswords
 ```
-**Wazuh:** ✅ Rule 100012 → Alert (Level 15) + Active Response (1 hour block) → MITRE T1003.001
+**Wazuh:** ✅ Rule 100012 → Alert (Level 15) + Active Response → MITRE T1003.001
+
+### Scenario 5: PsExec Lateral Movement
+```cmd
+C:\PsExec.exe /accepteula \\target cmd.exe /c hostname
+```
+**Wazuh:** ✅ Rule 100023 → Alert (Level 11) → MITRE T1569.002
 
 ---
 
@@ -483,7 +453,7 @@ This configuration is provided as-is for educational and security research purpo
 
 **admu-sec**  
 Project: Wazuh SIEM Optimization  
-Date: February 2026  
+Date: April 2026  
 Version: 1.2 (Rule fixes, verification & PsExec detection)
 
 ---
@@ -495,7 +465,8 @@ Version: 1.2 (Rule fixes, verification & PsExec detection)
 - ✅ Fixed rule 100003 (Password Spray) – replaced `same_user` with `same_source_ip`
 - ✅ Added PsExec detection rule 100023 (T1569.002) with correct `if_sid` 61603
 - ✅ Rule 100024 (SMB Admin Shares) deprecated – covered by built-in rule 67017 (T1021.002)
-- ✅ Verified all rules in production against live events
+- ✅ Added rules 100052–100056 (Ingress Tool Transfer, Lateral Tool Transfer, Create Account, Domain Logon, Kerberoasting)
+- ✅ Verified all active rules in production against live events
 - ✅ Total rules: 27 → 36
 
 ### Version 1.1 (2026-02-27)
