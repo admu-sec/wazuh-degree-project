@@ -59,8 +59,8 @@ wazuh-degree-project/
 
 ## SSH Security (4 rules)
 
-| Rule ID | Description | Level | MITRE ATT&CK |
-|---------|-------------|-------|--------------|
+| Rule ID | Description | Level | MITRE ATT&CK | Verified |
+|---------|-------------|-------|--------------|----------|
 | 100001 | SSH Authentication Failure | 10 | T1110.001, T1078 | ✅ |
 | 100002 | SSH Brute Force (5+ attempts) | 10 | T1110.001 | ✅ |
 | 100003 | SSH Password Spray Attack | 12 | T1110.003 | ✅ |
@@ -68,39 +68,41 @@ wazuh-degree-project/
 
 ---
 
-## Windows Security (18 rules)
+## Windows Security (23 rules)
 
 ### Noise Reduction (2 rules)
 
-| Rule ID | Description | Level |
-|---------|-------------|-------|
+| Rule ID | Description | Level | Verified |
+|---------|-------------|-------|----------|
 | 100005 | Ignore Disk Cleanup | 0 | ✅ |
 | 100006 | Ignore Windows Update | 0 | ✅ |
 
-### DC Security (1 rule)
+### DC Security (3 rules)
 
-| Rule ID | Description | Level | MITRE ATT&CK |
-|---------|-------------|-------|--------------|
+| Rule ID | Description | Level | MITRE ATT&CK | Verified |
+|---------|-------------|-------|--------------|----------|
 | 100010 | Administrator Login on DC | 12 | T1078 | ✅ |
+| 100055 | Domain Account Network Logon | 8 | T1078.002 | ✅ |
+| 100056 | Kerberoasting – RC4 Encrypted Ticket | 15 | T1558.003 | ❌ |
 
 ### PowerShell & Credential Dumping (3 rules)
 
-| Rule ID | Description | Level | MITRE ATT&CK |
-|---------|-------------|-------|--------------|
+| Rule ID | Description | Level | MITRE ATT&CK | Verified |
+|---------|-------------|-------|--------------|----------|
 | 100011 | PowerShell Encoded Command | 12 | T1059.001, T1027 | ✅ |
 | 100012 | Mimikatz Detection | 15 | T1003.001 | ✅ |
 | 100025 | LSASS Memory Access | 15 | T1003.001 | ✅ |
 
 ### RDP Security (1 rule)
 
-| Rule ID | Description | Level | MITRE ATT&CK |
-|---------|-------------|-------|--------------|
+| Rule ID | Description | Level | MITRE ATT&CK | Verified |
+|---------|-------------|-------|--------------|----------|
 | 100013 | RDP Brute Force | 10 | T1110 | ✅ |
 
 ### Persistence Detection (6 rules)
 
-| Rule ID | Description | Level | MITRE ATT&CK |
-|---------|-------------|-------|--------------|
+| Rule ID | Description | Level | MITRE ATT&CK | Verified |
+|---------|-------------|-------|--------------|----------|
 | 100014 | New Windows Service | 10 | T1543.003 | ✅ |
 | 100015 | OneDrivePatcher.exe | 12 | T1036 | ✅ |
 | 100016 | Registry Run Key Modified | 11 | T1547.001 | ✅ |
@@ -108,26 +110,34 @@ wazuh-degree-project/
 | 100018 | Registry Suspicious Path | 14 | T1547.001 | ✅ |
 | 100019 | PowerShell in Registry | 15 | T1547.001, T1059.001 | ✅ |
 
-### Critical Security Events (3 rules)
+### Critical Security Events (4 rules)
 
-| Rule ID | Description | Level | MITRE ATT&CK |
-|---------|-------------|-------|--------------|
+| Rule ID | Description | Level | MITRE ATT&CK | Verified |
+|---------|-------------|-------|--------------|----------|
 | 100020 | Security Logs Cleared | 15 | T1070.001 | ✅ |
 | 100021 | Windows Firewall Disabled | 12 | T1562.004 | ✅ |
 | 100022 | Ransomware Shadow Copy Deletion | 14 | T1490 | ✅ |
+| 100054 | New User Account Created | 12 | T1136 | ✅ |
 
-### Lateral Movement (1 rule)
+### Lateral Movement (3 rules)
 
-| Rule ID | Description | Level | MITRE ATT&CK | Notes |
-|---------|-------------|-------|--------------|-------|
+| Rule ID | Description | Level | MITRE ATT&CK | Verified |
+|---------|-------------|-------|--------------|----------|
 | 100023 | PsExec Detection | 11 | T1569.002 | ✅ |
+| 100053 | Lateral Tool Transfer (xcopy/robocopy) | 13 | T1570 | ✅ |
 | ~~100024~~ | ~~SMB Admin Share Access~~ | - | T1021.002 | Deprecated – covered by built-in rule 67017 |
 
 ### Defense Evasion (1 rule)
 
-| Rule ID | Description | Level | MITRE ATT&CK |
-|---------|-------------|-------|--------------|
+| Rule ID | Description | Level | MITRE ATT&CK | Verified |
+|---------|-------------|-------|--------------|----------|
 | 100026 | Windows Defender Disabled | 13 | T1562.001 | ✅ |
+
+### Ingress Tool Transfer (1 rule)
+
+| Rule ID | Description | Level | MITRE ATT&CK | Verified |
+|---------|-------------|-------|--------------|----------|
+| 100052 | File Download Tool Executed | 13 | T1105 | ✅ |
 
 ---
 
@@ -146,6 +156,20 @@ wazuh-degree-project/
 - **100042**: Malware persistence via cron jobs in `/etc/cron*` and `/var/spool/cron`
 - **100043**: Sudo commands from non-privileged users (compromised accounts)
 
+---
+
+## Adversary Emulation – Caldera (8 rules)
+
+| Rule ID | Description | Level | MITRE ATT&CK | Verified |
+|---------|-------------|-------|--------------|----------|
+| 100044 | Signed Binary Proxy Execution (Msiexec) | 11 | T1218.007 | ✅ |
+| 100045 | Scheduled Task Created | 11 | T1053.005 | ✅ |
+| 100046 | LSASS Access / Mimikatz | 15 | T1003.001 | ✅ |
+| 100047 | Process Injection | 12 | T1055.001 | ✅ |
+| 100048 | WMI Event Subscription | 13 | T1546.003 | ✅ |
+| 100049 | Screen Capture | 10 | T1113 | ✅ |
+| 100050 | Process Discovery | 8 | T1057 | ✅ |
+| 100051 | Data Compressed/Archived | 11 | T1560 | ✅ |
 ---
 
 ## Adversary Emulation – Caldera (8 rules)
