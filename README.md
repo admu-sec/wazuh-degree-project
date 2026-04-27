@@ -14,7 +14,7 @@ This repository contains custom Wazuh SIEM rules and Active Response configurati
 **Total Implementation:**
 
 - **40 custom security rules** (4 SSH + 23 Windows + 4 Linux + 8 Caldera + 1 deprecated)
-- **33 unique MITRE ATT&CK techniques covered**
+- **36 unique MITRE ATT&CK techniques covered**
 - **3 Active Response automations**
 - **6 whitelisted critical systems**
 - **File Integrity Monitoring (FIM) enabled**
