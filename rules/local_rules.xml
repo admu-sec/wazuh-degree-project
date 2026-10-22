@@ -306,7 +306,7 @@
 
 
   <!-- =============================== -->
-  <!-- Windows Security Ruls
+  <!-- Windows Security Rules
   <!-- =============================== -->
 
 <group name="local,windows,attack">
